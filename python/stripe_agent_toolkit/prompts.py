@@ -87,3 +87,10 @@ It takes three arguments:
 - amount (int, optional): The amount to refund in cents.
 - reason (str, optional): The reason for the refund.
 """
+
+CANCEL_SUBSCRIPTION_PROMPT = """
+This tool will cancel a subscription in Stripe.
+
+It takes one argument:
+- subscription (str): The ID of the subscription to cancel.
+"""

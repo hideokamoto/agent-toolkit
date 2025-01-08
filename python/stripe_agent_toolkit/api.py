@@ -22,6 +22,7 @@ from .functions import (
     finalize_invoice,
     retrieve_balance,
     create_refund,
+    cancel_subscription,
 )
 
 
@@ -71,5 +72,9 @@ class StripeAPI(BaseModel):
             return json.dumps(retrieve_balance(self._context, *args, **kwargs))
         elif method == "create_refund":
             return json.dumps(create_refund(self._context, *args, **kwargs))
+        elif method == "cancel_subscription":
+            return json.dumps(
+                cancel_subscription(self._context, *args, **kwargs)
+            )
         else:
             raise ValueError("Invalid method " + method)

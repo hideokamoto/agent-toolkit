@@ -162,3 +162,12 @@ class CreateRefund(BaseModel):
         ...,
         description="The amount to refund in cents.",
     )
+
+
+class CancelSubscription(BaseModel):
+    """Schema for the ``cancel_subscription`` operation."""
+
+    subscription: str = Field(
+        ...,
+        description="The ID of the subscription to cancel.",
+    )

@@ -14,6 +14,7 @@ from stripe_agent_toolkit.functions import (
     finalize_invoice,
     retrieve_balance,
     create_refund,
+    cancel_subscription,
 )
 
 
@@ -612,6 +613,36 @@ class TestStripeFunctions(unittest.TestCase):
             )
 
             self.assertEqual(result, {"id": mock_refund["id"]})
+
+    def test_cancel_subscription(self):
+        with mock.patch("stripe.Subscription.cancel") as mock_function:
+            mock_subscription = {"id": "sub_123"}
+            mock_function.return_value = stripe.Subscription.construct_from(
+                mock_subscription, "sk_test_123"
+            )
+
+            result = cancel_subscription(context={}, subscription="sub_123")
+
+            mock_function.assert_called_with(subscription="sub_123")
+
+            self.assertEqual(result, {"id": mock_subscription["id"]})
+
+    def test_cancel_subscription_with_context(self):
+        with mock.patch("stripe.Subscription.cancel") as mock_function:
+            mock_subscription = {"id": "sub_123"}
+            mock_function.return_value = stripe.Subscription.construct_from(
+                mock_subscription, "sk_test_123"
+            )
+
+            result = cancel_subscription(
+                context={"account": "acct_123"}, subscription="sub_123"
+            )
+
+            mock_function.assert_called_with(
+                subscription="sub_123", stripe_account="acct_123"
+            )
+
+            self.assertEqual(result, {"id": mock_subscription["id"]})
 
 
 if __name__ == "__main__":

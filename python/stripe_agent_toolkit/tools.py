@@ -13,6 +13,7 @@ from .prompts import (
     FINALIZE_INVOICE_PROMPT,
     RETRIEVE_BALANCE_PROMPT,
     CREATE_REFUND_PROMPT,
+    CANCEL_SUBSCRIPTION_PROMPT,
 )
 
 from .schema import (
@@ -28,6 +29,7 @@ from .schema import (
     FinalizeInvoice,
     RetrieveBalance,
     CreateRefund,
+    CancelSubscription,
 )
 
 tools: List[Dict] = [
@@ -160,6 +162,17 @@ tools: List[Dict] = [
         "actions": {
             "refunds": {
                 "create": True,
+            }
+        },
+    },
+    {
+        "method": "cancel_subscription",
+        "name": "Cancel Subscription",
+        "description": CANCEL_SUBSCRIPTION_PROMPT,
+        "args_schema": CancelSubscription,
+        "actions": {
+            "subscriptions": {
+                "update": True,
             }
         },
     },

@@ -307,3 +307,24 @@ def create_refund(
                 refund_data["stripe_account"] = account
 
     return stripe.Refund.create(**refund_data)
+
+
+def cancel_subscription(context: Context, subscription: str):
+    """
+    Cancel a subscription.
+
+    Parameters:
+        subscription (str): The ID of the subscription.
+
+    Returns:
+        stripe.Subscription: The canceled subscription.
+    """
+    subscription_data: dict = {
+        "subscription": subscription,
+    }
+    if context.get("account") is not None:
+        account = context.get("account")
+        if account is not None:
+            subscription_data["stripe_account"] = account
+
+    return stripe.Subscription.cancel(**subscription_data)
