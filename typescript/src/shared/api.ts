@@ -115,6 +115,13 @@ class StripeAPI {
         await createRefund(this.stripe, this.context, arg)
       );
       return output;
+    } else if (method === 'cancel_subscription') {
+      const output = JSON.stringify(
+        await this.stripe.subscriptions.cancel(arg.subscription, {
+          stripeAccount: this.context.account,
+        })
+      );
+      return output;
     } else {
       throw new Error('Invalid method ' + method);
     }

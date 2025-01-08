@@ -13,6 +13,7 @@ import {
   finalizeInvoiceParameters,
   retrieveBalanceParameters,
   createRefundParameters,
+  cancelSubscriptionParameters,
 } from './parameters';
 import type {Context} from './configuration';
 
@@ -232,5 +233,22 @@ export const createRefund = async (
     return refund;
   } catch (error) {
     return 'Failed to create refund';
+  }
+};
+
+export const cancelSubscription = async (
+  stripe: Stripe,
+  context: Context,
+  params: z.infer<typeof cancelSubscriptionParameters>
+) => {
+  try {
+    const subscription = await stripe.subscriptions.cancel(
+      params.subscription,
+      context.account ? {stripeAccount: context.account} : undefined
+    );
+
+    return subscription;
+  } catch (error) {
+    return 'Failed to cancel subscription';
   }
 };

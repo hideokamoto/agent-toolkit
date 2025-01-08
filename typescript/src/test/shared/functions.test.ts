@@ -11,6 +11,7 @@ import {
   finalizeInvoice,
   retrieveBalance,
   createRefund,
+  cancelSubscription,
 } from '../../shared/functions';
 
 const Stripe = jest.fn().mockImplementation(() => ({
@@ -42,6 +43,9 @@ const Stripe = jest.fn().mockImplementation(() => ({
   },
   refunds: {
     create: jest.fn(),
+  },
+  subscriptions: {
+    cancel: jest.fn(),
   },
 }));
 
@@ -565,5 +569,53 @@ describe('createRefund', () => {
       stripeAccount: context.account,
     });
     expect(result).toEqual(mockRefund);
+  });
+});
+
+describe('cancelSubscription', () => {
+  it('should cancel a subscription and return it', async () => {
+    const params = {
+      subscription: 'sub_123456',
+    };
+
+    const mockSubscription = {id: 'sub_123456'};
+
+    const context = {};
+
+    stripe.subscriptions.cancel.mockResolvedValue(mockSubscription);
+
+    const result = await cancelSubscription(stripe, context, params);
+
+    expect(stripe.subscriptions.cancel).toHaveBeenCalledWith(
+      params.subscription,
+      undefined
+    );
+
+    expect(result).toEqual(mockSubscription);
+  });
+
+  it('should specify the connected account if included in context', async () => {
+    const params = {
+      subscription: 'sub_123456',
+    };
+
+    const mockSubscription = {id: 'sub_123456'};
+
+    const context = {
+      account: 'acct_123456',
+    };
+
+    stripe.subscriptions.cancel.mockResolvedValue(mockSubscription);
+
+    const result = await cancelSubscription(stripe, context, params);
+
+    expect(stripe.subscriptions.cancel).toHaveBeenCalledWith(
+      params.subscription,
+      {
+        stripeAccount: context.account,
+      }
+    );
+
+    expect(result).toEqual(mockSubscription);
   });
 });

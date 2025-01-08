@@ -11,6 +11,7 @@ import {
   finalizeInvoicePrompt,
   retrieveBalancePrompt,
   createRefundPrompt,
+  cancelSubscriptionPrompt,
 } from './prompts';
 
 import {
@@ -26,6 +27,7 @@ import {
   finalizeInvoiceParameters,
   retrieveBalanceParameters,
   createRefundParameters,
+  cancelSubscriptionParameters,
 } from './parameters';
 
 export type Tool = {
@@ -170,6 +172,17 @@ const tools: Tool[] = [
     actions: {
       refunds: {
         create: true,
+      },
+    },
+  },
+  {
+    method: 'cancel_subscription',
+    name: 'Cancel Subscription',
+    description: cancelSubscriptionPrompt,
+    parameters: cancelSubscriptionParameters,
+    actions: {
+      subscriptions: {
+        update: true,
       },
     },
   },

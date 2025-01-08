@@ -113,3 +113,7 @@ export const createRefundParameters = z.object({
     .optional()
     .describe('The amount to refund in cents.'),
 });
+
+export const cancelSubscriptionParameters = z.object({
+  subscription: z.string().describe('The ID of the subscription to cancel.'),
+});
