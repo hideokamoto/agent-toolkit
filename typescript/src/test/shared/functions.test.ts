@@ -372,25 +372,71 @@ describe('createInvoice', () => {
     expect(result).toEqual(mockInvoice);
   });
 
-  it('should specify the connected account if included in context', async () => {
+  it('should use customer from context if provided', async () => {
     const params = {
       customer: 'cus_123456',
       items: [{price: 'price_123456', quantity: 1}],
     };
 
-    const mockInvoice = {id: 'in_123456', customer: 'cus_123456'};
+    const mockInvoice = {
+      id: 'in_123456',
+      customer: 'cus_context',
+      hosted_invoice_url: 'https://example.com',
+      status: 'draft',
+    };
 
     const context = {
-      account: 'acct_123456',
+      customer: 'cus_context',
     };
 
     stripe.invoices.create.mockResolvedValue(mockInvoice);
 
     const result = await createInvoice(stripe, context, params);
 
-    expect(stripe.invoices.create).toHaveBeenCalledWith(params, {
-      stripeAccount: context.account,
+    expect(stripe.invoices.create).toHaveBeenCalledWith(
+      {
+        ...params,
+        customer: context.customer,
+      },
+      undefined
+    );
+    expect(result).toEqual({
+      id: mockInvoice.id,
+      url: mockInvoice.hosted_invoice_url,
+      customer: mockInvoice.customer,
+      status: mockInvoice.status,
     });
+  });
+
+  it('should specify both customer and connected account if included in context', async () => {
+    const params = {
+      customer: 'cus_123456',
+      items: [{price: 'price_123456', quantity: 1}],
+    };
+
+    const mockInvoice = {
+      id: 'in_123456',
+      customer: 'cus_context',
+    };
+
+    const context = {
+      account: 'acct_123456',
+      customer: 'cus_context',
+    };
+
+    stripe.invoices.create.mockResolvedValue(mockInvoice);
+
+    const result = await createInvoice(stripe, context, params);
+
+    expect(stripe.invoices.create).toHaveBeenCalledWith(
+      {
+        ...params,
+        customer: context.customer,
+      },
+      {
+        stripeAccount: context.account,
+      }
+    );
     expect(result).toEqual(mockInvoice);
   });
 });
@@ -442,7 +488,10 @@ describe('createInvoiceItem', () => {
       invoice: 'in_123456',
     };
 
-    const mockInvoiceItem = {id: 'ii_123456', invoice: 'in_123456'};
+    const mockInvoiceItem = {
+      id: 'ii_123456',
+      invoice: 'in_123456',
+    };
 
     const context = {};
 
@@ -450,30 +499,76 @@ describe('createInvoiceItem', () => {
 
     const result = await createInvoiceItem(stripe, context, params);
 
-    expect(stripe.invoiceItems.create).toHaveBeenCalledWith(params, undefined);
+    expect(stripe.invoiceItems.create).toHaveBeenCalledWith(
+      {
+        ...params,
+        customer: params.customer,
+      },
+      undefined
+    );
     expect(result).toEqual(mockInvoiceItem);
   });
 
-  it('should specify the connected account if included in context', async () => {
+  it('should use customer from context if provided', async () => {
     const params = {
       customer: 'cus_123456',
       price: 'price_123456',
       invoice: 'in_123456',
     };
 
-    const mockInvoiceItem = {id: 'ii_123456', invoice: 'in_123456'};
+    const mockInvoiceItem = {
+      id: 'ii_123456',
+      invoice: 'in_123456',
+    };
 
     const context = {
-      account: 'acct_123456',
+      customer: 'cus_context',
     };
 
     stripe.invoiceItems.create.mockResolvedValue(mockInvoiceItem);
 
     const result = await createInvoiceItem(stripe, context, params);
 
-    expect(stripe.invoiceItems.create).toHaveBeenCalledWith(params, {
-      stripeAccount: context.account,
-    });
+    expect(stripe.invoiceItems.create).toHaveBeenCalledWith(
+      {
+        ...params,
+        customer: context.customer,
+      },
+      undefined
+    );
+    expect(result).toEqual(mockInvoiceItem);
+  });
+
+  it('should specify both customer and connected account if included in context', async () => {
+    const params = {
+      customer: 'cus_123456',
+      price: 'price_123456',
+      invoice: 'in_123456',
+    };
+
+    const mockInvoiceItem = {
+      id: 'ii_123456',
+      invoice: 'in_123456',
+    };
+
+    const context = {
+      account: 'acct_123456',
+      customer: 'cus_context',
+    };
+
+    stripe.invoiceItems.create.mockResolvedValue(mockInvoiceItem);
+
+    const result = await createInvoiceItem(stripe, context, params);
+
+    expect(stripe.invoiceItems.create).toHaveBeenCalledWith(
+      {
+        ...params,
+        customer: context.customer,
+      },
+      {
+        stripeAccount: context.account,
+      }
+    );
     expect(result).toEqual(mockInvoiceItem);
   });
 });

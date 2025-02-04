@@ -31,6 +31,10 @@ export type Context = {
   // Account is a Stripe Connected Account ID. If set, the integration will
   // make requests for this Account.
   account?: string;
+
+  // Customer is a Stripe Customer ID. If set, the integration will
+  // default to this Customer for all relevant requests.
+  customer?: string;
 };
 
 // Configuration provides various settings and options for the integration

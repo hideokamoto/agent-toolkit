@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import type {Context} from './configuration';
 
 import {
   createCustomerPrompt,
@@ -36,7 +37,9 @@ export type Tool = {
   method: string;
   name: string;
   description: string;
-  parameters: z.ZodObject<any, any, any, any>;
+  parameters:
+    | z.ZodObject<any, any, any, any>
+    | ((context: Context) => z.ZodObject<any, any, any, any>);
   actions: {
     [key: string]: {
       [action: string]: boolean;

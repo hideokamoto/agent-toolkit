@@ -141,11 +141,21 @@ export const createPaymentLink = async (
 export const createInvoice = async (
   stripe: Stripe,
   context: Context,
-  params: z.infer<typeof createInvoiceParameters>
+  params: z.infer<ReturnType<typeof createInvoiceParameters>> & {
+    customer?: string;
+  }
 ) => {
   try {
+    // Ensure we have a customer ID
+    if (!context.customer && !params.customer) {
+      throw new Error('Customer ID is required');
+    }
+
     const invoice = await stripe.invoices.create(
-      params,
+      {
+        ...params,
+        customer: context.customer || params.customer!,
+      },
       context.account ? {stripeAccount: context.account} : undefined
     );
 
@@ -163,11 +173,21 @@ export const createInvoice = async (
 export const createInvoiceItem = async (
   stripe: Stripe,
   context: Context,
-  params: z.infer<typeof createInvoiceItemParameters>
+  params: z.infer<ReturnType<typeof createInvoiceItemParameters>> & {
+    customer?: string;
+  }
 ) => {
   try {
+    // Ensure we have a customer ID
+    if (!context.customer && !params.customer) {
+      throw new Error('Customer ID is required');
+    }
+
     const invoiceItem = await stripe.invoiceItems.create(
-      params,
+      {
+        ...params,
+        customer: context.customer || params.customer!,
+      },
       context.account ? {stripeAccount: context.account} : undefined
     );
 

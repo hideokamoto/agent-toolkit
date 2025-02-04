@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import type {Context} from './configuration';
 
 export const createCustomerParameters = z.object({
   name: z.string().describe('The name of the customer'),
@@ -80,24 +81,49 @@ export const createPaymentLinkParameters = z.object({
     .describe('The quantity of the product to include.'),
 });
 
-export const createInvoiceParameters = z.object({
-  customer: z
-    .string()
-    .describe('The ID of the customer to create the invoice for.'),
-  days_until_due: z
-    .number()
-    .int()
-    .optional()
-    .describe('The number of days until the invoice is due.'),
-});
+// Context-aware parameters
+export const createInvoiceParameters = (context: Context) => {
+  const baseSchema = {
+    days_until_due: z
+      .number()
+      .int()
+      .optional()
+      .describe('The number of days until the invoice is due.'),
+  };
 
-export const createInvoiceItemParameters = z.object({
-  customer: z
-    .string()
-    .describe('The ID of the customer to create the invoice item for.'),
-  price: z.string().describe('The ID of the price for the item.'),
-  invoice: z.string().describe('The ID of the invoice to create the item for.'),
-});
+  // Only include customer in schema if not provided in context
+  if (!context.customer) {
+    return z.object({
+      ...baseSchema,
+      customer: z
+        .string()
+        .describe('The ID of the customer to create the invoice for.'),
+    });
+  }
+
+  return z.object(baseSchema);
+};
+
+export const createInvoiceItemParameters = (context: Context) => {
+  const baseSchema = {
+    price: z.string().describe('The ID of the price for the item.'),
+    invoice: z
+      .string()
+      .describe('The ID of the invoice to create the item for.'),
+  };
+
+  // Only include customer in schema if not provided in context
+  if (!context.customer) {
+    return z.object({
+      ...baseSchema,
+      customer: z
+        .string()
+        .describe('The ID of the customer to create the invoice item for.'),
+    });
+  }
+
+  return z.object(baseSchema);
+};
 
 export const finalizeInvoiceParameters = z.object({
   invoice: z.string().describe('The ID of the invoice to finalize.'),
