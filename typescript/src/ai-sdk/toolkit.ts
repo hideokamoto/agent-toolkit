@@ -44,7 +44,7 @@ class StripeAgentToolkit {
         this._stripe,
         tool.method,
         tool.description,
-        tool.parameters
+        tool.parameters(configuration.context || {})
       );
     });
   }

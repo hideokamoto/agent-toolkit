@@ -669,7 +669,9 @@ describe('createRefund', () => {
 describe('searchDocumentation', () => {
   it('should search for Stripe documentation and return sources', async () => {
     const question = 'How to create Stripe checkout session?';
-    const requestBody: z.infer<typeof searchDocumentationParameters> = {
+    const requestBody: z.infer<
+      ReturnType<typeof searchDocumentationParameters>
+    > = {
       question: question,
       language: 'ruby',
     };

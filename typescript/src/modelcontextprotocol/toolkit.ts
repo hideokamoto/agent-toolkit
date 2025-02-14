@@ -29,7 +29,7 @@ class StripeAgentToolkit extends McpServer {
       this.tool(
         tool.method,
         tool.description,
-        tool.parameters.shape,
+        tool.parameters(configuration.context || {}).shape,
         async (arg: any, _extra: RequestHandlerExtra) => {
           const result = await this._stripe.run(tool.method, arg);
           return {
